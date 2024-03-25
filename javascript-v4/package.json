@@ -1,0 +1,20 @@
+{
+  "name": "upload-image-to-blob-storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start --verbose",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/cognitiveservices-computervision": "^8.2.0",
+    "@azure/functions": "^4.3.0",
+    "@azure/ms-rest-js": "^2.7.0",
+    "@azure/storage-blob": "^12.17.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.x"
+  }
+}
