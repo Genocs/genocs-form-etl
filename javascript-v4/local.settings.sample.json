@@ -10,6 +10,9 @@
     "StorageKey": "your-storage-account-key",
     "ComputerVisionEndPoint": "https://REPLACE-WITH-YOUR-RESOURCE-NAME.cognitiveservices.azure.com/",
     "ComputerVisionKey": "your-computer-vision-key",
+    "DocumentIntelligenceEndPoint": "https://REPLACE-WITH-YOUR-RESOURCE-LOCATION.api.cognitive.microsoft.com/",
+    "DocumentIntelligenceKey": "your-resource-key",    
+    "DocumentIntelligenceModelId" : "prebuilt-invoice",    
     "CosmosDBConnection": "your-cosmosdb-connection-string"
   }
 }

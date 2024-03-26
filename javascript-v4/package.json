@@ -1,13 +1,14 @@
 {
   "name": "upload-image-to-blob-storage",
   "version": "1.0.0",
-  "description": "",
+  "description": "ETL pipeline to upload images to Azure Blob Storage and extract text using Azure Form Recognizer and Azure Computer Vision",
   "main": "src/functions/*.js",
   "scripts": {
     "start": "func start --verbose",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
+    "@azure/ai-form-recognizer" : "^5.0.0",
     "@azure/cognitiveservices-computervision": "^8.2.0",
     "@azure/functions": "^4.3.0",
     "@azure/ms-rest-js": "^2.7.0",
