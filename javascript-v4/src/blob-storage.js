@@ -11,16 +11,16 @@ const { AccountSASPermissions,
 // Create a service SAS for a blob
 function getBlobSasUri(url) {
 
-    const storage_AccountName = process.env.StorageAccountName;
-    const storage_Key = process.env.StorageKey;
-    const storage_Container = process.env.StorageContainerName;
+    const storageAccountName = process.env.StorageAccountName;
+    const storageKey = process.env.StorageKey;
+    const storageContainer = process.env.StorageContainerName;
 
     const blobName = url.split('/').pop();
 
-    const sharedKeyCredential = new StorageSharedKeyCredential(storage_AccountName, storage_Key);
+    const sharedKeyCredential = new StorageSharedKeyCredential(storageAccountName, storageKey);
 
     const sasOptions = {
-        containerName: storage_Container,
+        containerName: storageContainer,
         blobName: blobName,
         startsOn: new Date(),
         expiresOn: new Date(new Date().valueOf() + 3600 * 1000),
@@ -35,10 +35,10 @@ function getBlobSasUri(url) {
 // Create a blob container SAS token
 function getAccessToken() {
 
-    const storage_AccountName = process.env.StorageAccountName;
-    const storage_Key = process.env.StorageKey;
+    const storageAccountName = process.env.StorageAccountName;
+    const storageKey = process.env.StorageKey;
 
-    const sharedKeyCredential = new StorageSharedKeyCredential(storage_AccountName, storage_Key)
+    const sharedKeyCredential = new StorageSharedKeyCredential(storageAccountName, storageKey)
 
     const sasOptions = {
         services: AccountSASServices.parse("bf").toString(),            // blobs, tables, queues, files
@@ -57,11 +57,11 @@ function getAccessToken() {
 // This function is used to generate SAS token for blob container
 function getFileAccessToken(url) {
 
-    const storage_AccountName = process.env.StorageAccountName;
-    const storage_Key = process.env.StorageKey;
+    const storageAccountName = process.env.StorageAccountName;
+    const storageKey = process.env.StorageKey;
     const blobName = url.split('/').pop();
 
-    const sharedKeyCredential = new StorageSharedKeyCredential(storage_AccountName, storage_Key);
+    const sharedKeyCredential = new StorageSharedKeyCredential(storageAccountName, storageKey);
 
     const sasOptions = {
         services: AccountSASServices.parse("bf").toString(),            // blobs, tables, queues, files

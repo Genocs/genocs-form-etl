@@ -18,8 +18,10 @@ async function analyzeImage(url) {
 
         const endpoint = process.env.DocumentIntelligenceEndPoint;
         const apiKey = process.env.DocumentIntelligenceKey;
-        //const modelId = process.env.DocumentIntelligenceModelId;
-        const modelId = "prebuilt-receipt"; // prebuilt-invoice
+        
+        // you can use the prebuilt-invoice or prebuilt-receipt model
+        // as well as a custom model
+        const modelId = process.env.DocumentIntelligenceModelId;
 
         const client = new DocumentAnalysisClient(endpoint, new AzureKeyCredential(apiKey));
 
