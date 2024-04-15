@@ -13,6 +13,8 @@
     "DocumentIntelligenceEndPoint": "https://REPLACE-WITH-YOUR-RESOURCE-LOCATION.api.cognitive.microsoft.com/",
     "DocumentIntelligenceKey": "your-resource-key",    
     "DocumentIntelligenceModelId" : "prebuilt-invoice",    
-    "CosmosDBConnection": "your-cosmosdb-connection-string"
+    "CosmosDBConnection": "your-cosmosdb-connection-string",
+    "DatabaseName": "your-cosmosdb-database-name",
+    "CollectionName": "your-cosmosdb-collection-name"
   }
 }

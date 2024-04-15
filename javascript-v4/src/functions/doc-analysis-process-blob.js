@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const { ApiKeyCredentials } = require('@azure/ms-rest-js');
 const { ComputerVisionClient } = require('@azure/cognitiveservices-computervision');
 
-const blobStorage = require('../blob-storage'); // Import blob-storage.js file
+const blobStorage = require('../blobStorage'); // Import blob-storage.js file
 
 // This is a helper function to simulate a delay
 const sleep = require('util').promisify(setTimeout);
@@ -13,7 +13,7 @@ const COSMOSDB_CONTAINER_NAME = "uploaded";
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
 
-async function analyzeImage(url) {
+async function analyzeImage_OCR(url) {
 
     try {
 
@@ -26,6 +26,19 @@ async function analyzeImage(url) {
         const contents = await computerVisionClient.analyzeImage(url, {
             visualFeatures: ['ImageType', 'Categories', 'Tags', 'Description', 'Objects', 'Adult', 'Faces']
         });
+
+        return contents;
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+async function analyzeImage_GPT(url) {
+   
+    try {
+        const contents = "placeholder for GPT result";
 
         return contents;
 
@@ -48,28 +61,37 @@ app.storageBlob('process-blob-image', {
             // url is empty
             context.log('blob url is null or empty');
             return;
-        } else if (!extension || !imageExtensions.includes(extension.toLowerCase())) {
+        }
+
+        if (!extension || !imageExtensions.includes(extension.toLowerCase())) {
             // not processing file because it isn't a valid and accepted image extension
             context.log(`Invalid file extension. Only: ${imageExtensions.join(',')} are accepted.`);
             return;
-        } else {
-            //url is image
-            const id = uuidv4().toString();
-            const sasToken = blobStorage.getAccessToken(blobUrl);
-            const analysis = await analyzeImage(`${blobUrl}?${sasToken}`);
-
-            // `type` is the partition key 
-            const dataToInsertToDatabase = {
-                id,
-                type: 'image',
-                blobUrl,
-                blobSize: blob.length,
-                ...analysis,
-                trigger: context.triggerMetadata
-            }
-
-            return dataToInsertToDatabase;
         }
+
+        const id = uuidv4().toString();
+        const sasToken = blobStorage.getAccessToken(blobUrl);
+
+        // Call the analyzeImage function
+        const ocrResult = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
+
+
+        // Call CHATGPT API
+        const gptResult = await analyzeImage_GPT(`${blobUrl}?${sasToken}`);
+
+        // `type` is the partition key 
+        const dataToInsertToDatabase = {
+            id,
+            type: 'image',
+            blobUrl,
+            blobSize: blob.length,
+            ...ocrResult,
+            gptResult,
+            trigger: context.triggerMetadata
+        }
+
+        return dataToInsertToDatabase;
+
     },
     return: output.cosmosDB({
         connection: 'CosmosDBConnection',

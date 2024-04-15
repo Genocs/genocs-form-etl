@@ -5,7 +5,8 @@ const { DocumentAnalysisClient, AzureKeyCredential } = require("@azure/ai-form-r
 // This is a helper function to simulate a delay
 const sleep = require('util').promisify(setTimeout);
 
-const blobStorage = require('../blob-storage'); // Import blob-storage.js file
+const blobStorage = require('../blobStorage'); // Import blobStorage.js file
+const openaiClient = require('../openAI'); // Import openAI.js file
 
 const COSMOSDB_DATABASE_NAME = "TaxfreeForms";
 const COSMOSDB_CONTAINER_NAME = "uploaded";
@@ -18,7 +19,7 @@ async function analyzeImage(url) {
 
         const endpoint = process.env.DocumentIntelligenceEndPoint;
         const apiKey = process.env.DocumentIntelligenceKey;
-        
+
         // you can use the prebuilt-invoice or prebuilt-receipt model
         // as well as a custom model
         const modelId = process.env.DocumentIntelligenceModelId;
@@ -33,6 +34,13 @@ async function analyzeImage(url) {
 
         // There are more fields than just these three
         const { documents, pages, tables } = await poller.pollUntilDone();
+
+        const isTFFResult = await openaiClient.isTaxFreeForm(url);
+        const getTFFInfoResult = await openaiClient.getTaxFreeFormInfo(url);
+
+        console.log(isTFFResult.choices[0].message.content);
+        console.log(getTFFInfoResult.choices[0].message.content);
+
 
         /*
                 console.log("Documents:");
@@ -59,7 +67,7 @@ async function analyzeImage(url) {
                 }
         */
 
-        return { documents, pages, tables };
+        return { documents, pages, tables, isTFFResult, getTFFInfoResult };
 
     } catch (err) {
         console.log(err);
@@ -80,28 +88,31 @@ app.storageBlob('open-ai-process-blob-image', {
             // url is empty
             context.log('blob url is null or empty');
             return;
-        } else if (!extension || !imageExtensions.includes(extension.toLowerCase())) {
+        }
+
+        if (!extension || !imageExtensions.includes(extension.toLowerCase())) {
             // not processing file because it isn't a valid and accepted image extension
             context.log(`Invalid file extension. Only: ${imageExtensions.join(',')} are accepted.`);
             return;
-        } else {
-            //url is image
-            const id = uuidv4().toString();
-            const sasToken = blobStorage.getAccessToken(blobUrl);
-            const analysis = await analyzeImage(`${blobUrl}?${sasToken}`);
-
-            // `type` is the partition key 
-            const dataToInsertToDatabase = {
-                id,
-                type: 'image',
-                blobUrl,
-                blobSize: blob.length,
-                ...analysis,
-                trigger: context.triggerMetadata
-            }
-
-            return dataToInsertToDatabase;
         }
+
+        //url is image
+        const id = uuidv4().toString();
+        const sasToken = blobStorage.getAccessToken(blobUrl);
+        const analysis = await analyzeImage(`${blobUrl}?${sasToken}`);
+
+        // `type` is the partition key 
+        const dataToInsertToDatabase = {
+            id,
+            type: 'image',
+            blobUrl,
+            blobSize: blob.length,
+            ...analysis,
+            trigger: context.triggerMetadata
+        }
+
+        return dataToInsertToDatabase;
+
     },
     return: output.cosmosDB({
         connection: 'CosmosDBConnection',

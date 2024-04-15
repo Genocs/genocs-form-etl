@@ -23,7 +23,7 @@ function getBlobSasUri(url) {
         containerName: storageContainer,
         blobName: blobName,
         startsOn: new Date(),
-        expiresOn: new Date(new Date().valueOf() + 3600 * 1000),
+        expiresOn: new Date(new Date().valueOf() + (60 * 1000 * 1)),   // 1 minutes
         permissions: BlobSASPermissions.parse("r")
     };
 
