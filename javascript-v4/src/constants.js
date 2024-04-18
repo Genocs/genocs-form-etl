@@ -1,5 +1,5 @@
-const COSMOSDB_DATABASE_NAME = "TaxfreeForms";
-const COSMOSDB_CONTAINER_NAME = "uploaded";
+const COSMOSDB_DATABASE_NAME = "acquired_documents";
+const COSMOSDB_CONTAINER_NAME = "processed_forms";
 
 // Exporting functions to make them accessible from other files
 module.exports = {

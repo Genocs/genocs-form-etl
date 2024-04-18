@@ -3,13 +3,12 @@ const { v4: uuidv4 } = require('uuid');
 const { ApiKeyCredentials } = require('@azure/ms-rest-js');
 const { ComputerVisionClient } = require('@azure/cognitiveservices-computervision');
 
-const blobStorage = require('../blobStorage'); // Import blob-storage.js file
 
 // This is a helper function to simulate a delay
 const sleep = require('util').promisify(setTimeout);
 
-const COSMOSDB_DATABASE_NAME = "TaxfreeForms";
-const COSMOSDB_CONTAINER_NAME = "uploaded";
+const blobStorage = require('../blobStorage'); // Import blobStorage.js file
+const constants = require('../constants');
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
 
@@ -17,11 +16,11 @@ async function analyzeImage_OCR(url) {
 
     try {
 
-        const computerVision_ResourceKey = process.env.ComputerVisionKey;
-        const computerVision_Endpoint = process.env.ComputerVisionEndPoint;
+        const endpoint = process.env.ComputerVisionEndPoint;
+        const apiKey = process.env.ComputerVisionKey;
 
         const computerVisionClient = new ComputerVisionClient(
-            new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': computerVision_ResourceKey } }), computerVision_Endpoint);
+            new ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': apiKey } }), endpoint);
 
         const contents = await computerVisionClient.analyzeImage(url, {
             visualFeatures: ['ImageType', 'Categories', 'Tags', 'Description', 'Objects', 'Adult', 'Faces']
@@ -69,11 +68,12 @@ app.storageBlob('process-blob-image', {
             return;
         }
 
+        //url is image
         const id = uuidv4().toString();
         const sasToken = blobStorage.getAccessToken(blobUrl);
 
         // Call the analyzeImage function
-        const ocrResult = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
+        const analysis = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
 
 
         // Call CHATGPT API
@@ -85,7 +85,7 @@ app.storageBlob('process-blob-image', {
             type: 'image',
             blobUrl,
             blobSize: blob.length,
-            ...ocrResult,
+            ...analysis,
             gptResult,
             trigger: context.triggerMetadata
         }
@@ -95,7 +95,7 @@ app.storageBlob('process-blob-image', {
     },
     return: output.cosmosDB({
         connection: 'CosmosDBConnection',
-        databaseName: COSMOSDB_DATABASE_NAME,
-        containerName: COSMOSDB_CONTAINER_NAME
+        databaseName: constants.COSMOSDB_DATABASE_NAME,
+        containerName: constants.COSMOSDB_CONTAINER_NAME
     })
 });

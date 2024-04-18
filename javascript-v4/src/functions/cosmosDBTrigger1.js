@@ -1,8 +1,6 @@
 const { app, input, output } = require('@azure/functions');
 
-
-const COSMOSDB_DATABASE_NAME = "TaxfreeForms";
-const COSMOSDB_CONTAINER_NAME = "uploaded";
+const constants = require('../constants');
 /*
 app.cosmosDB('cosmosDBTrigger1', {
     connectionStringSetting: 'CosmosDBConnection',

@@ -7,9 +7,7 @@ const sleep = require('util').promisify(setTimeout);
 
 const blobStorage = require('../blobStorage'); // Import blobStorage.js file
 const openaiClient = require('../openAI'); // Import openAI.js file
-
-const COSMOSDB_DATABASE_NAME = "TaxfreeForms";
-const COSMOSDB_CONTAINER_NAME = "uploaded";
+const constants = require('../constants');
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
 
@@ -99,6 +97,8 @@ app.storageBlob('open-ai-process-blob-image', {
         //url is image
         const id = uuidv4().toString();
         const sasToken = blobStorage.getAccessToken(blobUrl);
+
+        // Call the analyzeImage function
         const analysis = await analyzeImage(`${blobUrl}?${sasToken}`);
 
         // `type` is the partition key 
@@ -116,7 +116,7 @@ app.storageBlob('open-ai-process-blob-image', {
     },
     return: output.cosmosDB({
         connection: 'CosmosDBConnection',
-        databaseName: COSMOSDB_DATABASE_NAME,
-        containerName: COSMOSDB_CONTAINER_NAME
+        databaseName: constants.COSMOSDB_DATABASE_NAME,
+        containerName: constants.COSMOSDB_CONTAINER_NAME
     })
 });
