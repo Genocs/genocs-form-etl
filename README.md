@@ -1,4 +1,6 @@
-# Upload and analyze a file with Azure Functions and Blob Storage
+# ETL (Extract Transform & Load) system
+
+**Based on Azure Functions Blob Storage, Cosmos DB, Document Intelligence and OpenAI**
 
 Language|Sample code|Tutorial|
 |--|--|--|
@@ -14,6 +16,8 @@ You can find the full tutorial on the Microsoft Docs site. Choose the language y
 [Original tutorial](https://learn.microsoft.com/en-us/azure/storage/blobs/blob-upload-function-trigger-javascript?tabs=storage-resource-visual-studio-code%2Ccomputer-vision-azure-portal%2Ccosmos-db-azure-portal)
   
 
+## Architecture 
+![image](genocs-etl.png)
 
 ## Introduction
 
@@ -91,6 +95,11 @@ Inside the folder you will find useful scripts to create the resources needed to
 7. Check the console output to see the contents of the uploaded file
 
 8. Check on CosmosDB the content of the analyzed file
+
+You can debug the function locally by setting breakpoints in the code and using the Azure Functions extension in Visual Studio Code.
+When you are ready to deploy the function to Azure, you can use the Azure Functions extension to create a new function app and deploy the function to Azure.
+Official documentation [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash)
+
 
 ## .NET
 

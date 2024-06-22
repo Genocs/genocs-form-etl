@@ -62,6 +62,7 @@ async function isTaxFreeForm(url) {
         model: "gpt-4-vision-preview",
         messages: is_taxfree_form_prompt,
         max_tokens: 512,
+        temperature: 0,
     });
 }
 
@@ -75,6 +76,7 @@ async function getTaxFreeFormInfo(url) {
         model: "gpt-4-vision-preview",
         messages: get_taxfree_form_info,
         max_tokens: 512,
+        temperature: 0,
     });
 }
 
