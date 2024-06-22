@@ -2,10 +2,10 @@
 
 Language|Sample code|Tutorial|
 |--|--|--|
-|.NET|[Sample code](dotnet)|[.NET tutorial](https://docs.microsoft.com/azure/storage/blobs/blob-upload-function-trigger?tabs=azure-portal)|
-|JavaScript|[Sample code](javascript)| [JavaScript tutorial](https://docs.microsoft.com/azure/storage/blobs/blob-upload-function-trigger-javascript?tabs=storage-resource-visual-studio-code%2Ccomputer-vision-azure-portal)|
-|JavaScript V4|[Sample code](javascript-v4)| [JavaScript V4 tutorial](https://docs.microsoft.com/azure/storage/blobs/blob-upload-function-trigger-javascript?tabs=storage-resource-visual-studio-code%2Ccomputer-vision-azure-portal)|
-|Python|[Sample code](python)|[Python tutorial](https://docs.microsoft.com/azure/storage/blobs/blob-upload-function-trigger-python?tabs=azure-portal)|
+|.NET|[Sample code](dotnet)|[.NET tutorial](https://learn.microsoft.com/en-us/azure/storage/blobs/blob-upload-function-trigger?tabs=azure-portal)|
+|JavaScript|[Sample code](javascript)| [JavaScript tutorial](https://learn.microsoft.com/en-us/azure/storage/blobs/blob-upload-function-trigger-javascript?tabs=storage-resource-visual-studio-code%2Ccomputer-vision-azure-portal%2Ccosmos-db-azure-portal)|
+|NodeJs|[Sample code](nodejs)| [NodeJs tutorial](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-typescript-get-started?tabs=azure-ad)|
+|Python|[Sample code](python)|[Python documentation](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-python-get-started?tabs=azure-ad)|
 
 
 In this tutorial, you'll learn how to upload an image to Azure Blob Storage and process it using Azure Functions and Computer Vision. You'll also learn how to implement Azure Function triggers and bindings as part of this process. Together, these services will analyze an uploaded image that contains text, extract the text out of it, and then store the text in a database row for later analysis or other purposes.
@@ -44,16 +44,18 @@ You'll need the following Azure resources to complete the tutorial:
 - Azure Cognitive Services account
 - Azure Function app
 - Cosmos DB account
+- Azure OpenAI account or OpenAI account
+
 
 
 ## nodejs
 
 The nodejs code is in the `nodejs` folder. The code is an Azure Function that is triggered by a new blob being uploaded to a container in Azure Blob Storage. The function:
   1. Reads the contents of the blob
-  2. Call the DocumentIntellige to extract the fila content
+  2. Call the Azure Document Intelligence to extract the file content
   3. Call The OpenAI CHAT gpt-4 to generate a summary of the content based on the prompt entered.
 
-Into this folder you will find usefull scripts to create the resources needed to run the function. Specifically you will find how to connecto the private blob Storage, how to Call the DocumentIntelligence and how to call the OpenAI API.
+Inside the folder you will find useful scripts to create the resources needed to run the function. Specifically, you will find how to connect the private blob Storage, how to Call the Document Intelligence and how to call the OpenAI API.
 
 
 ### Set up
