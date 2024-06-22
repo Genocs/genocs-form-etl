@@ -1,0 +1,22 @@
+{
+  "name": "genocs-azure-etl",
+  "version": "1.0.0",
+  "description": "ETL pipeline to upload images to Azure Blob Storage and extract text using Azure Form Recognizer, Azure Computer Vision and OpenAI GPT-4",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start --verbose",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/ai-form-recognizer": "^5.0.0",
+    "@azure/cognitiveservices-computervision": "^8.2.0",
+    "@azure/functions": "^4.5.0",
+    "@azure/ms-rest-js": "^2.7.0",
+    "@azure/storage-blob": "^12.23.0",
+    "openai": "^4.52.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "4.0.5801"
+  }
+}

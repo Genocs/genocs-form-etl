@@ -36,34 +36,34 @@ async function analyzeImage(url) {
         const isTFFResult = await openaiClient.isTaxFreeForm(url);
         const getTFFInfoResult = await openaiClient.getTaxFreeFormInfo(url);
 
+        /*
         console.log(isTFFResult.choices[0].message.content);
         console.log(getTFFInfoResult.choices[0].message.content);
 
-
-        /*
-                console.log("Documents:");
-                for (const document of documents || []) {
-                    console.log(`Type: ${document.docType}`);
-                    console.log("Fields:");
-                    for (const [name, field] of Object.entries(document.fields)) {
-                        console.log(
-                            `Field ${name} has value '${field.value}' with a confidence score of ${field.confidence}`
-                        );
-                    }
-                }
-                console.log("Pages:");
-                for (const page of pages || []) {
-                    console.log(`Page number: ${page.pageNumber} (${page.width}x${page.height} ${page.unit})`);
-                }
-        
-                console.log("Tables:");
-                for (const table of tables || []) {
-                    console.log(`- Table (${table.columnCount}x${table.rowCount})`);
-                    for (const cell of table.cells) {
-                        console.log(`  - cell (${cell.rowIndex},${cell.columnIndex}) "${cell.content}"`);
-                    }
-                }
-        */
+        console.log("Documents:");
+        for (const document of documents || []) {
+            console.log(`Type: ${document.docType}`);
+            console.log("Fields:");
+            for (const [name, field] of Object.entries(document.fields)) {
+                console.log(
+                    `Field ${name} has value '${field.value}' with a confidence score of ${field.confidence}`
+                );
+            }
+        }
+            
+        console.log("Pages:");
+        for (const page of pages || []) {
+            console.log(`Page number: ${page.pageNumber} (${page.width}x${page.height} ${page.unit})`);
+        }
+ 
+        console.log("Tables:");
+        for (const table of tables || []) {
+            console.log(`- Table (${table.columnCount}x${table.rowCount})`);
+            for (const cell of table.cells) {
+                console.log(`  - cell (${cell.rowIndex},${cell.columnIndex}) "${cell.content}"`);
+            }
+        }
+*/
 
         return { documents, pages, tables, isTFFResult, getTFFInfoResult };
 

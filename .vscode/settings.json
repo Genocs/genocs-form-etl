@@ -1,6 +1,6 @@
 {
-    "azureFunctions.projectSubpath": "javascript-v4",
-    "azureFunctions.deploySubpath": "javascript-v4",
+    "azureFunctions.projectSubpath": "nodejs",
+    "azureFunctions.deploySubpath": "nodejs",
     "azureFunctions.postDeployTask": "npm install (functions)",
     "azureFunctions.projectLanguage": "JavaScript",
     "azureFunctions.projectRuntime": "~4",

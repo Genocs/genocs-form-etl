@@ -9,9 +9,12 @@ const sleep = require('util').promisify(setTimeout);
 
 const blobStorage = require('../blobStorage'); // Import blobStorage.js file
 const constants = require('../constants');
+const openaiClient = require('../openAI'); // Import openAI.js file
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
 
+
+// This function will analyze the image using the Computer Vision API
 async function analyzeImage_OCR(url) {
 
     try {
@@ -33,13 +36,11 @@ async function analyzeImage_OCR(url) {
     }
 }
 
-
 async function analyzeImage_GPT(url) {
-   
-    try {
-        const contents = "placeholder for GPT result";
 
-        return contents;
+    try {
+        const isTFFResult = await openaiClient.getTaxFreeFormInfo(url);
+        return isTFFResult;
 
     } catch (err) {
         console.log(err);
@@ -74,7 +75,6 @@ app.storageBlob('process-blob-image', {
 
         // Call the analyzeImage function
         const analysis = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
-
 
         // Call CHATGPT API
         const gptResult = await analyzeImage_GPT(`${blobUrl}?${sasToken}`);
