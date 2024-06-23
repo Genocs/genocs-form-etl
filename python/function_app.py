@@ -47,3 +47,12 @@ def get_financials(req: func.HttpRequest) -> func.HttpResponse:
             "Error occurred: " + str(e),
             status_code=500
         )
+
+
+@app.blob_trigger(arg_name="myblob",
+                  path="images/{name}",
+                  connection="StorageConnection")
+def BlobTrigger(myblob: func.InputStream):
+    logging.info(f"Python blob trigger function processed blob"
+                 f"Name: {myblob.name}"
+                 f"Blob Size: {myblob.length} bytes")

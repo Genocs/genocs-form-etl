@@ -2,6 +2,6 @@
 # The Python Worker is managed by Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
-yfinance
-pandas
+azure-functions===1.20.0
+yfinance===0.2.40
+pandas===2.2.2

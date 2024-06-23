@@ -166,7 +166,7 @@ The python code is in the `python` folder. The code is a simple Azure Function t
 4. Activate the virtual environment
 
     ```bash
-    ./venv/Scripts/activate
+    ./.venv/Scripts/activate
     ```
 5. Install the required packages
 

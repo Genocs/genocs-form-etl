@@ -6,11 +6,13 @@ const { DocumentAnalysisClient, AzureKeyCredential } = require("@azure/ai-form-r
 const sleep = require('util').promisify(setTimeout);
 
 const blobStorage = require('../blobStorage'); // Import blobStorage.js file
-const openaiClient = require('../openAI'); // Import openAI.js file
 const constants = require('../constants');
+const openaiClient = require('../openAI'); // Import openAI.js file
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
 
+
+// This function will analyze the image using the Document Intelligence API
 async function analyzeImage(url) {
 
     try {
