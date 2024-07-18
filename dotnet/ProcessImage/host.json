@@ -5,7 +5,13 @@
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
-      }
+      },
+      "enableLiveMetricsFilters": true
+    }
+  },
+  "extensions": {
+    "cosmosDB": {
+      "connectionMode": "Gateway"
     }
   }
 }

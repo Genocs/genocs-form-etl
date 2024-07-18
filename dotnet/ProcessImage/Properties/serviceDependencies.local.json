@@ -3,7 +3,18 @@
     "appInsights1": {
       "type": "appInsights.sdk"
     },
+    "secrets1": {
+      "type": "secrets.user"
+    },
     "storage1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ServiceLinker/locations/westeurope/connectors/StorageAccount_B44F707934",
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/genocsstorage",
+      "type": "storage.azure",
+      "connectionId": "StorageAccount",
+      "dynamicId": null
+    },
+    "storage2": {
       "type": "storage.emulator",
       "connectionId": "AzureWebJobsStorage"
     }

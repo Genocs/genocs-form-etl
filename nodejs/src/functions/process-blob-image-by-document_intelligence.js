@@ -2,15 +2,10 @@ const { app, input, output } = require('@azure/functions');
 const { v4: uuidv4 } = require('uuid');
 const { DocumentAnalysisClient, AzureKeyCredential } = require("@azure/ai-form-recognizer");
 
-// This is a helper function to simulate a delay
-const sleep = require('util').promisify(setTimeout);
-
 const blobStorage = require('../blobStorage'); // Import blobStorage.js file
 const constants = require('../constants');
-const openaiClient = require('../openAI'); // Import openAI.js file
 
 const imageExtensions = ["jpg", "jpeg", "png", "bmp", "gif", "tiff"];
-
 
 // This function will analyze the image using the Document Intelligence API
 async function analyzeImage(url) {
@@ -20,66 +15,34 @@ async function analyzeImage(url) {
         const endpoint = process.env.DocumentIntelligenceEndPoint;
         const apiKey = process.env.DocumentIntelligenceKey;
 
-        // you can use the prebuilt-invoice or prebuilt-receipt model
+        // you can use the 'prebuilt-invoice' or 'prebuilt-receipt' model 
         // as well as a custom model
-        const modelId = process.env.DocumentIntelligenceModelId;
+        const diModelId = process.env.DocumentIntelligenceModelId;
 
         const client = new DocumentAnalysisClient(endpoint, new AzureKeyCredential(apiKey));
 
-        const poller = await client.beginAnalyzeDocumentFromUrl(modelId, url, {
+        const poller = await client.beginAnalyzeDocumentFromUrl(diModelId, url, {
             onProgress: ({ status }) => {
                 console.log(`status: ${status}`);
             },
         });
 
         // There are more fields than just these three
-        const { documents, pages, tables } = await poller.pollUntilDone();
+        const diResponse = await poller.pollUntilDone();
 
-        const isTFFResult = await openaiClient.isTaxFreeForm(url);
-        const getTFFInfoResult = await openaiClient.getTaxFreeFormInfo(url);
-
-        /*
-        console.log(isTFFResult.choices[0].message.content);
-        console.log(getTFFInfoResult.choices[0].message.content);
-
-        console.log("Documents:");
-        for (const document of documents || []) {
-            console.log(`Type: ${document.docType}`);
-            console.log("Fields:");
-            for (const [name, field] of Object.entries(document.fields)) {
-                console.log(
-                    `Field ${name} has value '${field.value}' with a confidence score of ${field.confidence}`
-                );
-            }
-        }
-            
-        console.log("Pages:");
-        for (const page of pages || []) {
-            console.log(`Page number: ${page.pageNumber} (${page.width}x${page.height} ${page.unit})`);
-        }
- 
-        console.log("Tables:");
-        for (const table of tables || []) {
-            console.log(`- Table (${table.columnCount}x${table.rowCount})`);
-            for (const cell of table.cells) {
-                console.log(`  - cell (${cell.rowIndex},${cell.columnIndex}) "${cell.content}"`);
-            }
-        }
-*/
-
-        return { documents, pages, tables, isTFFResult, getTFFInfoResult };
+        return { ...diResponse };
 
     } catch (err) {
         console.log(err);
     }
 }
 
-app.storageBlob('open-ai-process-blob-image', {
+app.storageBlob('process-blob-image-by-document_intelligence', {
     path: 'images/{name}',
     connection: 'StorageConnection',
     handler: async (blob, context) => {
 
-        context.log(`Storage blob 'open-ai-process-blob-image' url:${context.triggerMetadata.uri}, size:${blob.length} bytes`);
+        context.log(`Storage blob 'process-blob-image-by-document_intelligence' url:${context.triggerMetadata.uri}, size:${blob.length} bytes`);
 
         const blobUrl = context.triggerMetadata.uri;
         const extension = blobUrl.split('.').pop();
@@ -96,12 +59,23 @@ app.storageBlob('open-ai-process-blob-image', {
             return;
         }
 
-        //url is image
+        // Check if the image is more than 4MB
+        if (blob.length > 4 * 1024 * 1024) {
+            context.log('Image is too large. Max size is 4MB');
+            return;
+        }
+
+        // Check if the image is a valid TaxFree form image
+        //const isTFFResult = await openaiClient.isTaxFreeForm(url);
+
+        // Create a unique id for the document
         const id = uuidv4().toString();
+
+        // Get the SAS token for the blob
         const sasToken = blobStorage.getAccessToken(blobUrl);
 
-        // Call the analyzeImage function
-        const analysis = await analyzeImage(`${blobUrl}?${sasToken}`);
+        // Run the analysis
+        const analysisResult = await analyzeImage(`${blobUrl}?${sasToken}`);
 
         // `type` is the partition key 
         const dataToInsertToDatabase = {

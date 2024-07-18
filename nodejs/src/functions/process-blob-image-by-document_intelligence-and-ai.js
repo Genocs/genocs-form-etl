@@ -47,7 +47,7 @@ async function analyzeImage_GPT(url) {
     }
 }
 
-app.storageBlob('process-blob-image', {
+app.storageBlob('process-blob-image-by-document_intelligence-and-ai', {
     path: 'images/{name}',
     connection: 'StorageConnection',
     handler: async (blob, context) => {
@@ -69,15 +69,22 @@ app.storageBlob('process-blob-image', {
             return;
         }
 
-        //url is image
+        // Check if the image is more than 4MB
+        if (blob.length > 4 * 1024 * 1024) {
+            context.log('Image is too large. Max size is 4MB');
+            return;
+        }
+        // Create a unique id for the document
         const id = uuidv4().toString();
+
+        // Get the SAS token for the blob
         const sasToken = blobStorage.getAccessToken(blobUrl);
 
-        // Call the analyzeImage function
-        const analysis = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
+        // Run the analysis
+        //const analysisResult = await analyzeImage_OCR(`${blobUrl}?${sasToken}`);
 
         // Call CHATGPT API
-        const gptResult = await analyzeImage_GPT(`${blobUrl}?${sasToken}`);
+        //const gptResult = await analyzeImage_GPT(`${blobUrl}?${sasToken}`);
 
         // `type` is the partition key 
         const dataToInsertToDatabase = {
@@ -86,7 +93,6 @@ app.storageBlob('process-blob-image', {
             blobUrl,
             blobSize: blob.length,
             ...analysis,
-            gptResult,
             trigger: context.triggerMetadata
         }
 

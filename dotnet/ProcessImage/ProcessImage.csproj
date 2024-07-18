@@ -1,25 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<UserSecretsId>6a85e9ec-3523-4d30-b003-a348b99500c1</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="local.settings.json" />
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="local.settings.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" Version="7.0.1" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
-		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.21.0" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.19.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.19.0" />
+		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.CosmosDB" Version="4.7.0" />
+		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.3.1" />
+		<PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.4.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.9.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="local.settings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
 	</ItemGroup>
 </Project>
