@@ -1,6 +1,7 @@
-﻿using OpenAI.Chat;
+﻿using Azure;
+using Azure.AI.OpenAI;
+using OpenAI.Chat;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ProcessImageEx.Helpers;
@@ -13,7 +14,7 @@ public class AzureOpenAIHelper
     private static readonly int MAX_TOKENS = 350;
     public static async Task<dynamic> Run(string resourceURL)
     {
-        string apiKey = Environment.GetEnvironmentVariable("OpenAIKey");
+        string apiKey = Environment.GetEnvironmentVariable("AzureOpenAIKey");
         string endPoint = Environment.GetEnvironmentVariable("AzureOpenAIEndPoint");
 
         if (string.IsNullOrWhiteSpace(apiKey))
@@ -26,40 +27,27 @@ public class AzureOpenAIHelper
             throw new ArgumentException("AzureOpenAIEndPoint is not set");
         }
 
-        ChatClient client = new("gpt-4o", apiKey);
+        AzureOpenAIClient azureClient = new AzureOpenAIClient(
+                                                                new Uri(endPoint),
+                                                                new AzureKeyCredential(apiKey));
 
-        List<ChatMessage> messages = [
-            new UserChatMessage(
-                        ChatMessageContentPart.CreateTextMessageContentPart("Please describe the following image."),
-                        ChatMessageContentPart.CreateImageMessageContentPart(new Uri(resourceURL), "high"))
-        ];
-
-        ChatCompletion completion = await client.CompleteChatAsync(messages);
-
-        return completion?.Content[0]?.Text ?? "Unable to complete";
-
-        /*
-        AzureOpenAIClient azureClient = new(
-            new Uri("https://genocs-openai.openai.azure.com"),
-            new AzureKeyCredential(apiKey));
-
-
-
-
-        //ChatClient client = azureClient.GetChatClient("gpt4-with-vision");
+        ChatClient chatClient = azureClient.GetChatClient("gpt4-with-vision");
 
         ChatCompletion completion = chatClient.CompleteChat(
-    [
-        // System messages represent instructions or other guidance about how the assistant should behave
-        new SystemChatMessage("You are a helpful assistant that talks like a pirate."),
-        // User messages represent user input, whether historical or the most recen tinput
-        new UserChatMessage("Hi, can you help me?"),
-        // Assistant messages in a request represent conversation history for responses
-        new AssistantChatMessage("Arrr! Of course, me hearty! What can I do for ye?"),
-        new UserChatMessage("What's the best way to train a parrot?"),
-    ]);
+            [
+                // System messages represent instructions or other guidance about how the assistant should behave
+                new SystemChatMessage("You are a helpful assistant that talks like a pirate."),
+                // User messages represent user input, whether historical or the most recent input
+                new UserChatMessage("Hi, can you help me?"),
+                // Assistant messages in a request represent conversation history for responses
+                new AssistantChatMessage("Arrr! Of course, me hearty! What can I do for ye?"),
+                new UserChatMessage("What's the best way to train a parrot?"),
+            ]);
+
+        return completion.Content;
 
 
+        /*
         var payload = new
         {
             enhancements = new

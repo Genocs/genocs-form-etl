@@ -19,7 +19,7 @@ public class ImagesFunction
         // Check if the file is an image
         if (!FileTypeHelper.IsValidFile(name))
         {
-            log.LogInformation($"Invalid file type for {name}");
+            log.LogError($"Invalid file type for {name}");
             document = null;
             return;
         }
@@ -33,12 +33,8 @@ public class ImagesFunction
         // Chunk, and index on SearchAI
         // AzureSearchAIHelper.Run(azureDocumentIntelligenceAiResponse);
 
-        //var azureDocumentIntelligenceAiResponse = AzureDocumentAIHelper.Run(resourceURLWithSAS).Result;
-
         // Call the OpenAI API
         var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
-
-
 
         // Save into cosmosDB
         document = new { id = Guid.NewGuid(), type = "image", azureOpenAiResponse, azureDocumentIntelligenceAiResponse };
