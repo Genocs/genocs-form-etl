@@ -5,6 +5,8 @@
 		<UserSecretsId>6a85e9ec-3523-4d30-b003-a348b99500c1</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Azure.AI.OpenAI" Version="2.0.0-beta.2" />
+		<PackageReference Include="Azure.AI.DocumentIntelligence" Version="1.0.0-beta.2" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="12.21.0" />
 		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.19.0" />
 		<PackageReference Include="Azure.Storage.Queues" Version="12.19.0" />
