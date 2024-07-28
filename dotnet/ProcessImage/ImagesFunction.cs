@@ -34,10 +34,13 @@ public class ImagesFunction
         // AzureSearchAIHelper.Run(azureDocumentIntelligenceAiResponse);
 
         // Call the OpenAI API
-        var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
+        // var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
+
+        // Alternatively:  Call the OpenAI API
+        var openAiResponse = OpenAIHelper.Run(resourceURLWithSAS).Result;
 
         // Save into cosmosDB
-        document = new { id = Guid.NewGuid(), type = "image", azureOpenAiResponse, azureDocumentIntelligenceAiResponse };
+        document = new { id = Guid.NewGuid(), type = "image", openAiResponse, azureDocumentIntelligenceAiResponse };
 
         log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
     }
