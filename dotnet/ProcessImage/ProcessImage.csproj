@@ -3,6 +3,8 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
 		<UserSecretsId>6a85e9ec-3523-4d30-b003-a348b99500c1</UserSecretsId>
+		<DockerFastModeProjectMountDirectory>/home/site/wwwroot</DockerFastModeProjectMountDirectory>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Azure.AI.OpenAI" Version="2.0.0-beta.2" />
@@ -16,6 +18,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.4.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.CosmosDB" Version="4.10.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">

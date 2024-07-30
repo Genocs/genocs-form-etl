@@ -37,7 +37,7 @@ public class ImagesFunction
         // var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
 
         // Alternatively:  Call the OpenAI API
-        var openAiResponse = OpenAIHelper.Run(resourceURLWithSAS).Result;
+        var openAiResponse = OpenAIHelper.RunAsync(resourceURLWithSAS).Result;
 
         // Save into cosmosDB
         document = new { id = Guid.NewGuid(), type = "image", openAiResponse, azureDocumentIntelligenceAiResponse };

@@ -2,8 +2,13 @@
   "profiles": {
     "ProcessImage": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7144",
-      "launchBrowser": false
+      "commandLineArgs": "--port 7144"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 32452,
+      "useSSL": false
     }
   }
 }
