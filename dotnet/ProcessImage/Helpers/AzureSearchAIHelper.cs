@@ -6,7 +6,7 @@ namespace ProcessImageEx.Helpers;
 public class AzureSearchAIHelper
 {
 
-    public static async Task Run(AnalyzeResult analyzeResult)
+    public static async Task RunAsync(AnalyzeResult analyzeResult)
     {
         await Task.CompletedTask;
     }

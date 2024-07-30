@@ -12,7 +12,7 @@ public class AzureOpenAIHelper
     private static readonly double TEMPERATURE = 0.2;
     private static readonly double TOP_P = 0.95;
     private static readonly int MAX_TOKENS = 350;
-    public static async Task<dynamic> Run(string resourceURL)
+    public static async Task<dynamic> RunAsync(string resourceURL)
     {
         string apiKey = Environment.GetEnvironmentVariable("AzureOpenAIKey");
         string endPoint = Environment.GetEnvironmentVariable("AzureOpenAIEndPoint");
@@ -33,7 +33,7 @@ public class AzureOpenAIHelper
 
         ChatClient chatClient = azureClient.GetChatClient("gpt4-with-vision");
 
-        ChatCompletion completion = chatClient.CompleteChat(
+        ChatCompletion completion = await chatClient.CompleteChatAsync(
             [
                 // System messages represent instructions or other guidance about how the assistant should behave
                 new SystemChatMessage("You are a helpful assistant that talks like a pirate."),

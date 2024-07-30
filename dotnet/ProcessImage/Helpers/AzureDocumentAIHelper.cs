@@ -38,10 +38,11 @@ public class AzureDocumentAIHelper
 
         var content = new AnalyzeDocumentContent() { UrlSource = resourceUri };
 
+        /// list of features to extract
         var features = new List<DocumentAnalysisFeature>();
         features.Add(DocumentAnalysisFeature.Barcodes);
         features.Add(DocumentAnalysisFeature.OcrHighResolution);
-
+        features.Add(DocumentAnalysisFeature.KeyValuePairs);
 
         // Start the analyze operation
         var operation = await client.AnalyzeDocumentAsync(

@@ -13,7 +13,7 @@ public class OpenAIHelper
     private static readonly int MAX_TOKENS = 350;
     private static readonly string OPEN_AI_MODEL = "gpt-4o";
 
-    public static async Task<dynamic> Run(string resourceURL)
+    public static async Task<dynamic> RunAsync(string resourceURL)
     {
         string apiKey = Environment.GetEnvironmentVariable("OpenAIKey");
 
