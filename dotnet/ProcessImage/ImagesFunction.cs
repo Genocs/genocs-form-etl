@@ -1,3 +1,4 @@
+using Azure.AI.DocumentIntelligence;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ProcessImageEx.Helpers;
@@ -10,8 +11,8 @@ public class ImagesFunction
 {
     [FunctionName("ProcessBlobImageFunction")]
     public static void Run(
-        [BlobTrigger("images/{name}", Connection = "StorageConnection")] Stream myBlob,
-        [CosmosDB(databaseName: "acquired_documents", containerName: "processed_form_2", Connection = "CosmosDBConnection")] out dynamic document,
+        [BlobTrigger("uploaded-forms/{name}", Connection = "StorageConnection")] Stream myBlob,
+        [CosmosDB(databaseName: "acquired_documents", containerName: "acquired_forms", Connection = "CosmosDBConnection")] out dynamic document,
         string name,
         ILogger log)
     {
@@ -27,20 +28,32 @@ public class ImagesFunction
         // Get resource URL with SAS token
         string resourceURLWithSAS = SasToken.GetSasToken(name);
 
-        // Call DocumentAI to extract OCR data
-        var azureDocumentIntelligenceAiResponse = AzureDocumentAIHelper.Run(resourceURLWithSAS).Result;
 
-        // Chunk, and index on SearchAI
-        // AzureSearchAIHelper.Run(azureDocumentIntelligenceAiResponse);
+        AnalyzeResult azureDocumentIntelligenceAiResponse = null;
+        string openAiResponse = null;
 
-        // Call the OpenAI API
-        // var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
 
-        // Alternatively:  Call the OpenAI API
-        var openAiResponse = OpenAIHelper.RunAsync(resourceURLWithSAS).Result;
+        try
+        {
+            // Call DocumentAI to extract OCR data
+            azureDocumentIntelligenceAiResponse = AzureDocumentAIHelper.Run(resourceURLWithSAS).Result;
+
+            // Chunk, and index on SearchAI
+            // AzureSearchAIHelper.Run(azureDocumentIntelligenceAiResponse);
+
+            // Call the OpenAI API
+            // var azureOpenAiResponse = AzureOpenAIHelper.Run(resourceURLWithSAS).Result;
+
+            // Alternatively:  Call the OpenAI API
+            openAiResponse = OpenAIHelper.RunAsync(resourceURLWithSAS).Result;
+        }
+        catch (Exception ex)
+        {
+            log.LogError($"Error processing image {name}: {ex.Message}");
+        }
 
         // Save into cosmosDB
-        document = new { id = Guid.NewGuid(), type = "image", openAiResponse, azureDocumentIntelligenceAiResponse };
+        document = new { id = Guid.NewGuid(), image = name, type = "image", azureDocumentIntelligenceAiResponse, openAiResponse };
 
         log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myBlob.Length} Bytes");
     }

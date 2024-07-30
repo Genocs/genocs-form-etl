@@ -13,7 +13,7 @@ public class OpenAIHelper
     private static readonly int MAX_TOKENS = 350;
     private static readonly string OPEN_AI_MODEL = "gpt-4o";
 
-    public static async Task<dynamic> RunAsync(string resourceURL)
+    public static async Task<string> RunAsync(string resourceURL)
     {
         string apiKey = Environment.GetEnvironmentVariable("OpenAIKey");
 
@@ -26,7 +26,9 @@ public class OpenAIHelper
 
         List<ChatMessage> messages = [
             new UserChatMessage(
-                        ChatMessageContentPart.CreateTextMessageContentPart("Please describe the following image."),
+                        ChatMessageContentPart.CreateTextMessageContentPart("You are an assistant to help identify if the image provided is a Tax-Free form or a receipt. The forms are issued by private companies like: 'Global Blue', 'Planet', 'Tax Refund'. The Tax-free form is a standard A4 sheet or a thermal receipt. Please respond concisely, starting by reporting the country of origin, the issuing company. Please replay only with a JSON like the following: { is_taxfree_form : true, is_receipt: true, country: 'USA', vro: 'tax operator' }")),
+            new UserChatMessage(
+                        ChatMessageContentPart.CreateTextMessageContentPart("Is the image a TaxFree form or receipt?"),
                         ChatMessageContentPart.CreateImageMessageContentPart(new Uri(resourceURL), "high"))
         ];
 
