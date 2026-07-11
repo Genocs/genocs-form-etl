@@ -103,7 +103,35 @@ Official documentation [here](https://docs.microsoft.com/en-us/azure/azure-funct
 
 ## .NET
 
-The .NET code is in the `dotnet` folder. The code is a simple Azure Function that is triggered by a new blob being uploaded to a container in Azure Blob Storage. The function reads the contents of the blob and logs the content to the console.
+The .NET code is in the `dotnet` folder. The code is an Azure Function app that is triggered by a new blob being uploaded to a container in Azure Blob Storage. The function reads the contents of the blob and logs the content to the console.
+
+### Runtime and tools
+
+- Target framework: .NET 10 (`net10.0`)
+- Azure Functions model: isolated worker (`FUNCTIONS_WORKER_RUNTIME=dotnet-isolated`)
+- Azure Functions Core Tools: latest v4
+
+Check your installed Core Tools version:
+
+```bash
+func --version
+```
+
+### Package compatibility note
+
+The current package set targets the .NET 10 isolated worker model.
+
+- `Microsoft.Azure.Functions.Worker` = `2.52.0`
+- `Microsoft.Azure.Functions.Worker.Sdk` = `2.0.7`
+- `Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs` = `6.8.1`
+- `Microsoft.Azure.Functions.Worker.Extensions.CosmosDB` = `4.16.1`
+- `Azure.Storage.Blobs` = `12.29.1`
+- `Azure.Storage.Files.Shares` = `12.27.1`
+- `Azure.Storage.Queues` = `12.27.1`
+- `Azure.AI.OpenAI` = `2.1.0`
+- `Azure.AI.DocumentIntelligence` = `1.0.0`
+- `Azure.AI.ContentUnderstanding` = `1.1.0`
+- `Azure.Identity` = `1.21.0`
 
 ### Set up
 
@@ -118,28 +146,154 @@ The .NET code is in the `dotnet` folder. The code is a simple Azure Function tha
     cd ./genocs-form-etl/dotnet
     code .
     ```
-3. Create a new Azure Function project
+3. Start Azurite (required for local storage emulation)
 
     ```bash
-    func init --worker-runtime dotnet
+    azurite --silent --location .azurite --debug .azurite/azurite-debug.log
     ```
-4. Create a new Azure Function
+
+4. In a second terminal, run the function locally from the project folder
 
     ```bash
-    func new --name BlobTrigger --template "Blob trigger"
-    ```
-5. Run the function locally
-
-    ```bash
+    cd ./DocumentImporter
     func start
     ``` 
-6. Open the Azure Storage Explorer and create a new container in the Azure Storage emulator
+5. Open the Azure Storage Explorer and create a new container in the Azure Storage emulator
 
-7. Upload a file to the container
+6. Upload a file to the container
 
-8. Check the console output to see the contents of the uploaded file
+7. Check the console output to see the contents of the uploaded file
+
+### Troubleshooting (.NET)
+
+If `func start` fails locally, use this checklist:
+
+Quick health-check (copy/paste):
+
+```bash
+# 1) Verify Azure Functions Core Tools version (v4 required)
+func --version
+
+# 2) Verify .NET target build from the function project
+cd ./dotnet/DocumentImporter
+dotnet restore && dotnet build
+
+# 3) Start the function host
+func start
+```
+
+1. Local storage connection is refused (`127.0.0.1:10000`, `10001`, or `10002`)
+
+    Symptom:
+    - Errors mentioning Azure Storage, Blob/Queue/Table endpoints, or connection refused.
+
+    Fix:
+    - Start Azurite before running Functions:
+
+    ```bash
+    azurite --silent --location .azurite --debug .azurite/azurite-debug.log
+    ```
+
+3. No job functions found
+
+    Symptom:
+    - Host starts but reports no discoverable job functions.
+
+    Fix:
+    - Run from the project folder:
+
+    ```bash
+    cd ./DocumentImporter
+    func start
+    ```
+
+    - Ensure function classes and methods are public and not commented out.
+
+5. Port already in use (for host or Azurite)
+
+    Symptom:
+    - `Port 7071 is unavailable` (Functions host)
+    - `listen EADDRINUSE ... 127.0.0.1:10000` (Azurite)
+
+    Fix:
+    - Stop the process using the port, or run the host on another port:
+
+    ```bash
+    func start --port 7072
+    ```
+
+## Local development with Azurite
+
+A local settings file was scaffolded for the .NET function app at `dotnet/DocumentImporter/local.settings.json`.
+
+The file is configured to use Azurite for the storage bindings:
+
+- `AzureWebJobsStorage=UseDevelopmentStorage=true`
+- `StorageConnection=UseDevelopmentStorage=true`
+
+To be used on your local machine, you need to install and run Azurite. You can find the installation instructions in the [Azurite GitHub repository](https://github.com/Azure/Azurite).
+
+To install Azurite, you can use npm:
+```powershell
+npm install -g azurite
+```
+
+Azurite covers blob-trigger storage only. The app still needs real values for Cosmos DB, OpenAI, and Document Intelligence settings when you want the full pipeline to run locally.
 
 
+Example Azurite start command:
+
+```powershell
+azurite --silent --location .azurite --debug .azurite\azurite-debug.log
+```
+
+Required app settings that are still placeholders in the scaffolded file:
+
+- `CosmosDBConnection`
+- `CosmosDBDatabaseName`
+- `CosmosDBContainerName`
+- `StorageAccountName`
+- `StorageAccountKey`
+- `StorageContainerName`
+- `OpenAIKey`
+- `AzureOpenAIKey`
+- `AzureOpenAIEndPoint`
+- `DocumentIntelligenceKey`
+- `DocumentIntelligenceEndPoint`
+- `DocumentIntelligenceModelId`
+- `DocumentUndestandingEndPoint`
+- `DocumentUndestandingKey`
+- `DocumentUndestandingAnalyzerId`
+
+Example `dotnet/DocumentImporter/local.settings.json`:
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "StorageConnection": "UseDevelopmentStorage=true",
+    "StorageAccountName": "<your-storage-account-name>",
+    "StorageAccountKey": "<your-storage-account-key>",
+    "StorageContainerName": "<your-blob-container-name>",
+    "CosmosDBConnection": "AccountEndpoint=https://<your-cosmos-account>.documents.azure.com:443/;AccountKey=<your-cosmos-key>;",
+    "CosmosDBDatabaseName": "<your-database-name>",
+    "CosmosDBContainerName": "<your-container-name>",
+    "OpenAIKey": "<your-openai-api-key>",
+    "AzureOpenAIKey": "<your-azure-openai-key>",
+    "AzureOpenAIEndPoint": "https://<your-azure-openai-resource>.openai.azure.com/",
+    "DocumentIntelligenceEndPoint": "https://<your-region>.api.cognitive.microsoft.com/",
+    "DocumentIntelligenceKey": "<your-document-intelligence-key>",
+    "DocumentIntelligenceModelId": "prebuilt-read",
+    "DocumentUndestandingEndPoint": "https://<your-content-understanding-resource>.services.ai.azure.com/",
+    "DocumentUndestandingKey": "<your-content-understanding-key>",
+    "DocumentUndestandingAnalyzerId": "prebuilt-documentSearch"
+  }
+}
+```
+
+> When running against live Azure resources, replace `UseDevelopmentStorage=true` with the real connection string for `AzureWebJobsStorage` and `StorageConnection`.
 
 ## Python
 
@@ -201,10 +355,14 @@ The python code is in the `python` folder. The code is a simple Azure Function t
 
 ## Resources
 
-- [Azure Functions Python developer guide](https://docs.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure Functions triggers and bindings](https://docs.microsoft.com/azure/azure-functions/functions-triggers-bindings)
-- [Azure Storage Blob package](https://pypi.org/project/azure-storage-blob/)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+
 - [Azure Functions Core Tools](https://docs.microsoft.com/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash)
+- [Azure Functions triggers and bindings](https://docs.microsoft.com/azure/azure-functions/functions-triggers-bindings)
+- [Azure Functions Python developer guide](https://docs.microsoft.com/azure/azure-functions/functions-reference-python)
+
+- [Azure Storage Blob package](https://pypi.org/project/azure-storage-blob/)
 - [Azure Storage Emulator](https://docs.microsoft.com/azure/storage/common/storage-use-emulator)
 - [Azure Storage Explorer](https://azure.microsoft.com/features/storage-explorer/)
-- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+
+

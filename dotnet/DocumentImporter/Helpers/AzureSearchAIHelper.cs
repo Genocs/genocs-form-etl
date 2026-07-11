@@ -1,7 +1,6 @@
 ﻿using Azure.AI.DocumentIntelligence;
-using System.Threading.Tasks;
 
-namespace ProcessImageEx.Helpers;
+namespace Genocs.DocumentImporter.Helpers;
 
 public class AzureSearchAIHelper
 {

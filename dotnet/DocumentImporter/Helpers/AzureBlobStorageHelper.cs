@@ -2,9 +2,8 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
-using System;
 
-namespace ProcessImageEx.Helpers;
+namespace Genocs.DocumentImporter.Helpers;
 
 /// <summary>
 /// Blob storage helper function
@@ -42,11 +41,24 @@ public class SasToken
     /// <param name="blobName">The name of the blob</param>
     /// <param name="onlySAS">Return only the SAS token</param>
     /// <returns>The sas token</returns>
-    public static string GetSasToken(string blobName, bool onlySAS = false)
+    public static string GetSasToken(string blobName, string? containerName = null, bool onlySAS = false)
     {
-        string storageAccount = Environment.GetEnvironmentVariable("StorageAccountName");
-        string storageKey = Environment.GetEnvironmentVariable("StorageAccountKey");
-        string containerName = Environment.GetEnvironmentVariable("StorageContainerName");
+        string storageConnection = Environment.GetEnvironmentVariable("StorageConnection")
+            ?? Environment.GetEnvironmentVariable("AzureWebJobsStorage")
+            ?? string.Empty;
+
+        containerName ??= Environment.GetEnvironmentVariable("StorageContainerName");
+
+        if (string.IsNullOrWhiteSpace(containerName))
+        {
+            throw new ArgumentException("StorageContainerName is not set");
+        }
+
+        string storageAccount = Environment.GetEnvironmentVariable("StorageAccountName")
+            ?? throw new ArgumentException("StorageAccountName is not set");
+
+        string storageKey = Environment.GetEnvironmentVariable("StorageAccountKey")
+            ?? throw new ArgumentException("StorageAccountKey is not set");
 
         if (string.IsNullOrWhiteSpace(storageAccount))
         {
@@ -102,15 +114,13 @@ public class SasToken
 
 
 
-    public static Uri CreateServiceSASBlob(
-                                            BlobClient blobClient,
-                                            string storedPolicyName = null)
+    public static Uri? CreateServiceSASBlob(BlobClient blobClient, string? storedPolicyName = null)
     {
         // Check if BlobContainerClient object has been authorized with Shared Key
         if (blobClient.CanGenerateSasUri)
         {
             // Create a SAS token that's valid for one day
-            BlobSasBuilder sasBuilder = new BlobSasBuilder()
+            BlobSasBuilder sasBuilder = new()
             {
                 BlobContainerName = blobClient.GetParentBlobContainerClient().Name,
                 BlobName = blobClient.Name,
